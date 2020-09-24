@@ -6,32 +6,43 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 import sys
-import jieba
 import re
+import jieba
+import numpy as np
 
-
-# 分词
-def re_jieba_han(str):
-    openStr = open(str, 'r', encoding='utf-8')
-    line = openStr.readline()
-    outStr = []
+def re_jieba_han(sel):
+    """
+    对目标文档进行读取
+    采取结巴算法进行分词
+    使用re函数筛除标点符号
+    最后输出文档文字列表
+    :param sel:
+    :return:
+    """
+    open_sel = open(sel, 'r', encoding='utf-8')
+    line = open_sel.readline()
+    out_sel = []
     while line:
         line = line.strip()  # 去除空格
         seg_list = jieba.cut(line,cut_all=False)
-        midStr = []
+        mid_sel = []
         for word in seg_list:
-            midStr.append(word)
-        #print(midStr)
-        for tag in midStr:
+            mid_sel.append(word)
+        for tag in mid_sel:
             if re.match(u"[a-zA-Z0-9\u4e00-\u9fa5]", tag):
-                outStr.append(tag)
+                out_sel.append(tag)
             else:
                 pass
-        line = openStr.readline()
-    return outStr
+        line = open_sel.readline()
+    return out_sel
 
-#统计关键词和词频
 def count(words):
+    """
+    统计关键词和词频
+    对所得文档列表转化为字典
+    :param words:
+    :return:
+    """
     t = {}
     for word in words:
         if word !="" and t.__contains__(word):
@@ -42,20 +53,31 @@ def count(words):
     dic = sorted(t.items(),key=lambda t:t[1],reverse=True)
     return dic
 
-def mergeWord(T1,T2):
+def merge_word(T1,T2):
+    """
+    对两个文档字典进行关键词合并
+    :param T1:
+    :param T2:
+    :return:
+    """
     mergeWord = []
-    duplicateWord = 0
+    duplicate_word = 0
     for ch in range(len(T1)):
         mergeWord.append(T1[ch][0])
     for ch in range(len(T2)):
         if T2[ch][0] in mergeWord:
-            duplicateWord = duplicateWord + 1
+            duplicate_word = duplicate_word + 1
         else:
             mergeWord.append(T2[ch][0])
     return mergeWord
 
-#文档转化向量
 def change(T1,mergeWord):
+    """
+    字典转化为向量
+    :param T1:
+    :param mergeWord:
+    :return:
+    """
     TF1 = [0] * len(mergeWord)
     for ch in range(len(T1)):
         TF = T1[ch][1]
@@ -69,10 +91,14 @@ def change(T1,mergeWord):
                 i = i + 1
     return TF1
 
-
-#计算相似度
-import numpy as np
 def cosine_similarity(x, y, norm=False):
+    """
+    计算余弦相似度
+    :param x:
+    :param y:
+    :param norm:
+    :return:
+    """
     assert len(x) == len(y), "len(x) != len(y)"
     zero_list = [0] * len(x)
     if x == zero_list or y == zero_list:
@@ -87,7 +113,7 @@ if __name__ == '__main__':
     #拆分句子
     rfile = count(re_jieba_han(sys.argv[1]))
     ffile = count(re_jieba_han(sys.argv[2]))
-    mergeword = mergeWord(rfile,ffile)
+    mergeword = merge_word(rfile,ffile)
     #向量化
     r_vector = change(rfile,mergeword)
     f_vector = change(ffile,mergeword)
