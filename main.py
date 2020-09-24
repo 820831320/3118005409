@@ -1,14 +1,12 @@
-# This is a sample Python script.
 """
 软工个人作业——论文相似度重复率计算程序
 """
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 import sys
 import re
 import jieba
 import numpy as np
+import os
 
 def re_jieba_han(sel):
     """
@@ -23,14 +21,11 @@ def re_jieba_han(sel):
     line = open_sel.readline()
     out_sel = []
     while line:
-        line = line.strip()  # 去除空格
+        line = line.strip()
         seg_list = jieba.cut(line,cut_all=False)
-        mid_sel = []
         for word in seg_list:
-            mid_sel.append(word)
-        for tag in mid_sel:
-            if re.match(u"[a-zA-Z0-9\u4e00-\u9fa5]", tag):
-                out_sel.append(tag)
+            if re.match(u"[a-zA-Z0-9\u4e00-\u9fa5]", word):
+                out_sel.append(word)
             else:
                 pass
         line = open_sel.readline()
@@ -110,6 +105,12 @@ def cosine_similarity(x, y, norm=False):
     return 0.5 * cos + 0.5 if norm else cos
 
 if __name__ == '__main__':
+    #判断是否为空文件
+    size1 = os.path.getsize(sys.argv[1])
+    size2 = os.path.getsize(sys.argv[2])
+    if size1 == 0 or size2 == 0:
+        print("有一个文件为空，无法比较")
+        exit(1)
     #拆分句子
     rfile = count(re_jieba_han(sys.argv[1]))
     ffile = count(re_jieba_han(sys.argv[2]))
@@ -117,9 +118,11 @@ if __name__ == '__main__':
     #向量化
     r_vector = change(rfile,mergeword)
     f_vector = change(ffile,mergeword)
+    #计算结果
     result = cosine_similarity(r_vector,f_vector)
     result = np.float(result)
     result = round(result,2)
+    #结果写入文档
     file3 = open(sys.argv[3],"w")
     file3.write(str(result))
     file3.close()
