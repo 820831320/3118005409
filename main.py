@@ -119,7 +119,7 @@ if __name__ == '__main__':
     f_vector = change(ffile,mergeword)
     result = cosine_similarity(r_vector,f_vector)
     result = np.float(result)
-    result = round(result,3)
+    result = round(result,2)
     file3 = open(sys.argv[3],"w")
     file3.write(str(result))
     file3.close()
