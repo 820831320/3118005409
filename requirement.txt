@@ -1,2 +1,14 @@
+astroid==2.4.2
+colorama==0.4.3
+coverage==5.3
+isort==5.5.3
 jieba==0.42.1
+lazy-object-proxy==1.4.3
+mccabe==0.6.1
 numpy==1.19.2
+pylint==2.6.0
+six==1.15.0
+snakeviz==2.1.0
+toml==0.10.1
+tornado==6.0.4
+wrapt==1.12.1
